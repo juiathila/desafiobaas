@@ -2,35 +2,13 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ---------------------------------------------------------------------------
-    // 🐛 BUG 08 — SECURITY RULES TOTALMENTE ABERTAS
-    // ---------------------------------------------------------------------------
-    // O que está acontecendo: QUALQUER pessoa no mundo pode ler, criar, editar
-    // e deletar QUALQUER documento do banco — sem estar logada, sem verificação
-    // de propriedade. Isso é uma brecha de segurança crítica!
-    //
-    // Por quê? A regra abaixo usa "allow read, write: if true" — o "if true"
-    // significa "sempre permitido". Sem condição alguma. Qualquer script
-    // malicioso pode apagar todos os personagens de todos os usuários.
-    //
-    // CORREÇÃO: substitua as regras abaixo por estas regras seguras:
-    //
-    // match /personagens/{personagemId} {
-    //   allow read: if request.auth != null &&
-    //               request.auth.uid == resource.data.userId;
-    //   allow create: if request.auth != null &&
-    //                 request.auth.uid == request.resource.data.userId;
-    //   allow update, delete: if request.auth != null &&
-    //                         request.auth.uid == resource.data.userId;
-    // }
-    //
-    // Com essas regras: usuário só pode ler/editar/deletar documentos onde
-    // resource.data.userId == uid do usuário logado (request.auth.uid).
-    // ---------------------------------------------------------------------------
-
-    // 🐛 BUG 08 — rules abertas: qualquer um pode fazer qualquer coisa
-    match /{document=**} {
-      allow read, write: if true;
+    match /personagens/{personagemId} {
+      allow read: if request.auth != null &&
+                  request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null &&
+                    request.auth.uid == request.resource.data.userId;
+      allow update, delete: if request.auth != null &&
+                            request.auth.uid == resource.data.userId;
     }
   }
 }
