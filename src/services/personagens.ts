@@ -107,11 +107,9 @@ export async function equiparItem(
 // CORREÇÃO: use personagem.id ao invés de String(indice) no deleteDoc.
 // ---------------------------------------------------------------------------
 export async function deletarPersonagem(
-  personagem: Personagem,
-  indice: number
+  personagem: Personagem
 ): Promise<void> {
-  // 🐛 BUG 07 — usa o índice da lista (0, 1, 2) como ID do documento
-  await deleteDoc(doc(db, "personagens", String(indice)));
+  await deleteDoc(doc(db, "personagens", personagem.id));
 }
 
 // ---------------------------------------------------------------------------

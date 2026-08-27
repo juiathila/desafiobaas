@@ -27,13 +27,12 @@ export default function DashboardPage() {
       .finally(() => setCarregando(false));
   }, [user]);
 
-  async function handleDeletar(personagem: Personagem, indice: number) {
+  async function handleDeletar(personagem: Personagem) {
     if (!confirm(`Tem certeza que quer deletar ${personagem.nome}? Esta ação não pode ser desfeita.`)) return;
     setDeletando(personagem.id);
     try {
-      // 🐛 BUG 07 — esta chamada vai deletar o personagem ERRADO
-      await deletarPersonagem(personagem, indice);
-      setPersonagens((prev) => prev.filter((_, i) => i !== indice));
+      await deletarPersonagem(personagem);
+      setPersonagens((prev) => prev.filter((p) => p.id !== personagem.id));
     } catch {
       alert("Erro ao deletar personagem.");
     } finally {
@@ -131,7 +130,7 @@ export default function DashboardPage() {
           </div>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(270px, 1fr))", gap: "1rem" }}>
-            {personagens.map((p, i) => {
+            {personagens.map((p) => {
               const info = classeInfo(p);
               return (
                 <div key={p.id} className={`card-3d-wrapper classe-${p.classe}`}>
@@ -195,7 +194,7 @@ export default function DashboardPage() {
                         Equipar
                       </Link>
                       <button
-                        onClick={() => handleDeletar(p, i)}
+                        onClick={() => handleDeletar(p)}
                         disabled={deletando === p.id}
                         className="btn btn-danger"
                         style={{ fontSize: "0.8rem", padding: "0.5rem 0.75rem" }}
